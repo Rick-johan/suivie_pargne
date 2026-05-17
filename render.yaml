@@ -1,0 +1,19 @@
+services:
+  # Service Unique (Frontend + Backend)
+  - type: web
+    name: epargne-pro-saas
+    env: node
+    plan: free
+    # On déploie depuis la racine pour que le backend voit le dossier frontend
+    rootDir: . 
+    buildCommand: "cd backend && npm install"
+    startCommand: "cd backend && node server.js"
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PORT
+        value: 10000

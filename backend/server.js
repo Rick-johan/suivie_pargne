@@ -11,13 +11,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API Pure - Pas de service de fichiers statiques
-app.get('/', (req, res) => {
+// Service des fichiers statiques du Frontend
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.get('/api', (req, res) => {
     res.json({
         message: 'Épargne Pro API active',
         status: 'online',
-        version: '1.0.0'
+        version: '1.2.0'
     });
+});
+
+// Toutes les autres routes GET renvoient vers l'index.html du frontend (pour le SPA)
+app.get('*', (req, res) => {
+    // Si c'est une requête API qui n'existe pas, on laisse l'erreur 404 normale
+    if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Route API non trouvée' });
+
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
 });
 
 
