@@ -4,47 +4,21 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const bcrypt = require('bcryptjs');
+const path = require('path');
+
 const app = express();
-
-const ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:5500',
-    'https://suiviepargne.netlify.app'
-];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Interdit par CORS'));
-        }
-    },
-    credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
 
-const path = require('path');
-const bcrypt = require('bcryptjs');
-
-// Serveur de fichiers statiques (Optionnel pour le déploiement Cloud séparé)
-const frontendPath = path.join(__dirname, '../frontend');
-const fs = require('fs');
-
-if (fs.existsSync(frontendPath)) {
-    app.use(express.static(frontendPath));
-    app.get('/', (req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
-} else {
-    // Mode API pure (Render/Cloud)
-    app.get('/', (req, res) => {
-        res.json({
-            status: "online",
-            message: "Épargne Pro API active",
-            production: true
-        });
+// API Pure - Pas de service de fichiers statiques
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Épargne Pro API active',
+        status: 'online',
+        version: '1.0.0'
     });
-}
+});
 
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/epargne_pro_saas';
