@@ -16,8 +16,8 @@ let ADMIN_TOKEN = sessionStorage.getItem('admin_token');
 let ALL_PROJECTS = [];
 let currentTypeFilter = 'all';
 let searchQuery = '';
-let CURRENT_EDITING_ID = null;
 let ALL_PENDING = [];
+let idleTimer; // Security Watchdog
 
 window.closeCreateModal = function () {
     const modal = document.getElementById('create-modal');
@@ -100,10 +100,27 @@ async function handleLogin() {
     }
 }
 
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    if (ADMIN_TOKEN) {
+        // 10 Minutes = 600,000ms
+        idleTimer = setTimeout(() => {
+            console.log("Session Admin expirée : Inactivité prolongée.");
+            handleLogout();
+        }, 600000);
+    }
+}
+
+// Global Activity Listeners for Admin
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, resetIdleTimer, true);
+});
+
 function showStudio() {
     document.getElementById('login-overlay').style.display = 'none';
     document.querySelector('.studio-app').classList.add('active');
     loadProjects();
+    resetIdleTimer(); // Start security watchdog
 }
 
 function handleLogout() {

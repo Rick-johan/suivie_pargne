@@ -505,11 +505,12 @@ window.markAll = function (ids) {
     showDialog("Sécurité", `Pour Valider ${weeksLabel}, confirmez avec votre PIN :`, true, "", async (pin) => {
         if (!pin) return;
 
+        const totalWithFees = Math.round(totalAmount * 1.01);
         showDialog("Accord de Paiement",
-            `Le montant total à régler est de ${totalAmount.toLocaleString()} F. Payer avec Wave maintenant ?`,
+            `Le montant total à régler est de ${totalAmount.toLocaleString()} F. Payer avec Wave maintenant ?\nTotal à payer : ${totalWithFees.toLocaleString()} F (+1% de frais)`,
             false, null,
             () => {
-                const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${totalAmount}`;
+                const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${totalWithFees}`;
                 window.open(waveMerchantLink, '_blank');
 
                 setTimeout(async () => {
@@ -576,14 +577,16 @@ window.toggle = function (id) {
     // Checking the case directly -> PIN -> AMOUNT CONFIRM -> Initiate Wave Flow
     const amount = item.amount;
 
+    const totalWithFees = Math.round(amount * 1.01);
+
     showDialog("Sécurité", `Pour Valider [${item.label}], confirmez avec votre PIN :`, true, "", async (pin) => {
         if (!pin) return;
 
         showDialog("Accord de Paiement",
-            `Vous êtes sur le point de régler ${amount.toLocaleString()} F via Wave. Voulez-vous continuer ?`,
+            `Vous êtes sur le point de régler ${amount.toLocaleString()} F via Wave. Voulez-vous continuer ?\nTotal à payer : ${totalWithFees.toLocaleString()} F (+1% de frais)`,
             false, null,
             () => {
-                const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${amount}`;
+                const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${totalWithFees}`;
                 window.open(waveMerchantLink, '_blank');
 
                 setTimeout(async () => {
@@ -1092,8 +1095,9 @@ window.initiateWavePayment = function () {
     showDialog("Sécurité", `Pour confirmer votre versement de ${total.toLocaleString()} F, veuillez entrer votre PIN :`, true, "", (pin) => {
         if (!pin) return;
 
-        showDialog("Transmission Wave", `Poursuivre vers Wave pour payer ${total.toLocaleString()} F ?`, false, null, () => {
-            const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${total}`;
+        const totalWithFees = Math.round(total * 1.01);
+        showDialog("Transmission Wave", `Poursuivre vers Wave pour payer ${total.toLocaleString()} F ?\nTotal à payer : ${totalWithFees.toLocaleString()} F (+1% de frais)`, false, null, () => {
+            const waveMerchantLink = `https://pay.wave.com/m/M_ci_kloDagYwzjtm/c/ci/?amount=${totalWithFees}`;
             window.open(waveMerchantLink, '_blank');
 
             setTimeout(async () => {
